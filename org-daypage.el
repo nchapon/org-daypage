@@ -39,14 +39,17 @@
 ;; (define-key daypage-mode-map (kbd "<C-down>") 'daypage-next-week)
 ;; (define-key daypage-mode-map "\C-c." 'daypage-time-stamp)
 ;;
-;; (global-set-key [f11] 'todays-daypage) 
-;; (global-set-key [f10] 'yesterdays-daypage) 
+;; (global-set-key [f11] 'todays-daypage)
+;; (global-set-key [f10] 'yesterdays-daypage)
 ;; (global-set-key "\C-con" 'todays-daypage)
 ;; (global-set-key "\C-coN" 'find-daypage)
 
 (eval-when-compile (require 'cl))
 
-(setq daypage-path "~/notes/days/")
+(defcustom daypage-path
+  "~/notes/days/"
+  "Where day pages are stored."
+  :group 'org-daypage)
 
 (defvar daypage-mode-map
   (let ((map (make-sparse-keymap)))
@@ -55,7 +58,7 @@
 
 (defun find-daypage (&optional date)
   "Go to the day page for the specified date, or todays if none is specified."
-  (interactive (list 
+  (interactive (list
                 (org-read-date "" 'totime nil nil
                                (current-time) "")))
   (setq date (or date (current-time)))
@@ -69,7 +72,7 @@
 
 (defun daypage-date ()
   "Return the date for the daypage visited by the current buffer
-or nil if the current buffer isn't visiting a dayage" 
+or nil if the current buffer isn't visiting a dayage"
   (let ((file (buffer-file-name))
         (root-path (expand-file-name daypage-path)))
     (if (and file
@@ -94,42 +97,42 @@ or nil if the current buffer isn't visiting a dayage"
 
 (defun daypage-next ()
   (interactive)
-  (find-daypage 
+  (find-daypage
    (seconds-to-time (+ (time-to-seconds (daypage-date))
                        86400)))
   (run-hooks 'daypage-movement-hook))
 
 (defun daypage-prev ()
   (interactive)
-  (find-daypage 
+  (find-daypage
    (seconds-to-time (- (time-to-seconds (daypage-date))
                        86400)))
   (run-hooks 'daypage-movement-hook))
 
 (defun daypage-next-week ()
   (interactive)
-  (find-daypage 
+  (find-daypage
    (seconds-to-time (+ (time-to-seconds (daypage-date))
                        (* 86400 7))))
   (run-hooks 'daypage-movement-hook))
 
 (defun daypage-prev-week ()
   (interactive)
-  (find-daypage 
+  (find-daypage
    (seconds-to-time (- (time-to-seconds (daypage-date))
                        (* 86400 7))))
   (run-hooks 'daypage-movement-hook))
 
 (defun todays-daypage ()
   "Go straight to todays day page without prompting for a date."
-  (interactive) 
+  (interactive)
   (find-daypage)
   (run-hooks 'daypage-movement-hook))
 
 (defun yesterdays-daypage ()
   "Go straight to todays day page without prompting for a date."
-  (interactive) 
-  (find-daypage 
+  (interactive)
+  (find-daypage
    (seconds-to-time (- (time-to-seconds (current-time))
                       86400)))
   (run-hooks 'daypage-movement-hook))
